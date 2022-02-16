@@ -25,9 +25,6 @@ int main()
     //     cout<<"\n";
     // }
 
-
-
-
     // int n;
     // cin>>n;
     // for(int i=0;i<n;i++){
@@ -40,8 +37,6 @@ int main()
     //     cout<<"\n";
     // }
 
-
-
     // int n,m=1;
     // cin>>n;
     // for(int i=0;i<n;i++){
@@ -51,9 +46,6 @@ int main()
     //     }
     //     cout<<endl;
     // }
-
-
-
 
     // int n,temp;
     // cin>>n;
@@ -106,8 +98,6 @@ int main()
     //     cout<<"\n";
     // }
 
-
-
     // int n;
     // cin>>n;
     // for(int i=1; i<=n; i++){
@@ -117,10 +107,6 @@ int main()
     //     cout<<endl;
     // }
 
-
-
-
-
     // int n;
     // cin>>n;
     // for(int i=1; i<=n;i++){
@@ -128,12 +114,8 @@ int main()
     //         if((i+j)%2==0)cout<<"1 ";
     //         else cout<<"0 ";
     //     }
-    //     cout<<endl; 
+    //     cout<<endl;
     // }
-
-
-
-
 
     //  int n;
     // cin>>n;
@@ -147,9 +129,6 @@ int main()
     //     cout<<endl;
     // }
 
-
-
-
     // int n;
     // cin>>n;
     // for(int i=1;i<=n;i++){
@@ -161,8 +140,6 @@ int main()
     //     }
     //     cout<<endl;
     // }
-
-
 
     //  int n;
     //  cin>>n;
@@ -178,9 +155,6 @@ int main()
     //      }
     //      cout<<endl;
     //  }
-
-
-
 
     // int n;
     // cin>>n;
@@ -203,9 +177,6 @@ int main()
     //     cout<<endl;
     // }
 
-
-
-
     // int n,k,l,a,b,c;
     // cin>>n;
     // k=n%4;
@@ -226,16 +197,20 @@ int main()
     //         cout<<"*       ";
     //     }
 
-
-    int n; 
-    cin>>n;
-    for (int i=1;i<=3;i++){
-        for(int j=1;j<=n;j++){
-            if((j+i)%4==0)cout<<"* ";
-            else if(i==2 && (j+i)%4==2)cout<<"* ";
-            else cout<<"  ";
+    int n;
+    cin >> n;
+    for (int i = 1; i <= 3; i++)
+    {
+        for (int j = 1; j <= n; j++)
+        {
+            if ((j + i) % 4 == 0)
+                cout << "* ";
+            else if (i == 2 && (j + i) % 4 == 2)
+                cout << "* ";
+            else
+                cout << "  ";
         }
-        cout<<endl;
+        cout << endl;
     }
-       return 0;
+    return 0;
 }
