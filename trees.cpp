@@ -206,25 +206,118 @@ vector<vector<int>> verticalTraversal(TreeNode* root) {
 }
 
 
-vector<int> rightSideView(TreeNode* root) {
-    stack<TreeNode*> st;
-    int level=1;
-    vector<int> ans;
-    while(root||!st.empty()) {
-        if(!root) {
-            root=st.top()->left;
-            st.pop();
-            level--;
-        }
-        st.push(root);
-        if(!ans[level-1]) {
-            ans[level-1]=root->val;
-        }
-        root=root->right;
-        level++;
-    }
+void rightView(TreeNode* root, int level, vector<int>& ans) {
+    if(!root)return;
+    if(ans.size()==level)ans.push_back(root->val);
+    rightView(root->right, level+1, ans);
+    rightView(root->left, level+1, ans);
+}
+void bottomLeft(TreeNode* root, int level, pair<int, int>& ans) {
+    if(!root)return;
+    if(level>=ans.second)ans={ root->val,level };
+    bottomLeft(root->right, level+1, ans);
+    bottomLeft(root->left, level+1, ans);
 }
 
+void topSideView(TreeNode* root, int x, int y, vector<pair<int, int>>& ans) {
+    if(!root)return;
+    if(ans[x].first==0 || ans[x].second>y)ans[x]={ root->val,y };
+    topSideView(root->right, x+1, y+1, ans);
+    topSideView(root->left, x-1, y+1, ans);
+}
+vector<int> topView(TreeNode* root) {
+    int n=1000000;
+    vector<int> sol;
+    vector<pair<int, int>> ans(n, { 0,0 });
+    topSideView(root, n/2, 0, ans);
+    for(int i=0;i<n;i++)if(ans[i].first!=0)sol.push_back(ans[i].first);
+    return sol;
+}
+
+bool checkSym(TreeNode* root1, TreeNode* root2) {
+    if(!root1 || !root2)return root1==root2;
+    if(root1->val!=root2->val)return false;
+    return checkSym(root1->left, root2->right) && checkSym(root1->right, root2->left);
+}
+
+void pathToLeaf(TreeNode* root, vector<int>& ans, vector<vector<int>>& sol) {
+    if(!root)return;
+    ans.push_back(root->val);
+    if(!root->left && !root->right)sol.push_back(ans);
+    pathToLeaf(root->left, ans, sol);
+    pathToLeaf(root->right, ans, sol);
+    ans.pop_back();
+}
+
+bool pathToNode(TreeNode* root, vector<int>& ans, TreeNode* target) {
+    if(!root)return false;
+    ans.push_back(root->val);
+    if(root==target)return true;
+    if(pathToNode(root->left, ans, target) || pathToNode(root->right, ans, target))return true;
+    ans.pop_back();
+    return false;
+}
+
+bool lca(TreeNode* root, TreeNode* p, TreeNode* q, TreeNode*& ans) {
+    if(ans||!root)return false;
+    bool i=(root==p || root==q);
+    bool l=lca(root->left, p, q, ans);
+    bool r=lca(root->right, p, q, ans);
+    if((l&&r)||(l&&i)||(r&&i))ans=root;
+    return i||l||r;
+}
+
+int widthOfBinaryTree(TreeNode* root) {
+    long long ans=1;
+    queue<pair<TreeNode*, long long>> q;
+    q.push({ root,1 });
+    while(!q.empty()) {
+        long long n=q.size(), s=0, e=0;
+        for(int i=1;i<=n;i++) {
+            TreeNode* node=q.front().first;
+            long long x=q.front().second;
+            if(i==1)s=x;
+            if(i==n)e=x;
+            if(node->left) {
+                q.push({ node->left,x*2-1 });
+            }
+            if(node->right) {
+                q.push({ node->right,x*2 });
+            }
+            q.pop();
+        }
+        cout<<e<<" "<<s<<endl;
+        ans=max(ans, e-s+1);
+    }
+    return ans;
+}
+
+
+void kDown(TreeNode* root, int k, vector<int>& sol) {
+    if(k<0)return;
+    if(k==0) {
+        sol.push_back(root->val);
+        return;
+    }
+    if(root->left)kDown(root->left, k-1, sol);
+    if(root->right)kDown(root->right, k-1, sol);
+}
+
+bool pathToNodeK(TreeNode* root, vector<TreeNode*>& ans, TreeNode* target) {
+    if(!root)return false;
+    ans.push_back(root);
+    if(root==target || pathToNodeK(root->left, ans, target) || pathToNodeK(root->right, ans, target))return true;
+    ans.pop_back();
+    return false;
+}
+
+int timeDown(TreeNode* root) {
+    int lt=0, rt=0;
+    if(!root)return 0;
+    if(root->left)lt=timeDown(root->left);
+    if(root->right)rt=timeDown(root->right);
+    return 1+max(lt, rt);
+}
 
 int main() {
 #ifndef ONLINE_JUDGE
@@ -236,13 +329,11 @@ int main() {
     root->left=new TreeNode(2);
     root->right=new TreeNode(3);
     root->left->left=new TreeNode(4);
-    root->left->right=new TreeNode(6);
-    root->right->left=new TreeNode(5);
+    root->left->right=new TreeNode(5);
+    root->right->left=new TreeNode(6);
     root->right->right=new TreeNode(7);
-    root->right->right->right=new TreeNode(8);
-    root->right->right->right->left=new TreeNode(9);
-
-    verticalTraversal(root);
+    root->left->right->left=new TreeNode(8);
+    root->left->right->right=new TreeNode(9);
 
     // vector<vector<int>> sol;
     // queue<TreeNode*> add;
@@ -364,6 +455,37 @@ int main() {
     // int ans=0;
     // diameter(root, ans);
     // cout<<ans;
+
+    // int k=2;
+    // vector<TreeNode*> ans;
+    // vector<int> sol;
+    // pathToNodeK(root, ans, root->left);
+    // int n=ans.size();
+    // for(int i=0;i<n-1;i++) {
+    //     if(ans[i]->left==ans[i+1] && ans[i]->right) kDown(ans[i]->right, k+i-n, sol);
+    //     if(ans[i]->right==ans[i+1] && ans[i]->left) kDown(ans[i]->left, k+i-n, sol);
+    // }
+    // if(k<=n-1 && k!=0)sol.push_back(ans[n-1-k]->val);
+    // kDown(ans[n-1], k, sol);
+    // for(auto ele: sol) {
+    //     cout<<ele<<" ";
+    // }
+
+    // TreeNode* target=root->left->right->left;
+    // vector<TreeNode*> ans;
+    // pathToNodeK(root, ans, target);
+    // int n=ans.size(), sol=0;
+    // for(int i=0;i<n-1;i++) {
+    //     if(ans[i]->left==ans[i+1]) {
+    //         sol=max(sol, n-1-i+timeDown(ans[i]->right));
+    //     }
+    //     if(ans[i]->right==ans[i+1]) {
+    //         sol=max(sol, n-1-i+timeDown(ans[i]->left));
+    //     }
+    // }
+    // sol=max(sol, timeDown(target)-0);
+    // cout<<sol;
+
 
     return 0;
 }
