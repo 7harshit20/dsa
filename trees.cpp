@@ -319,6 +319,67 @@ int timeDown(TreeNode* root) {
     return 1+max(lt, rt);
 }
 
+int totalNodes(TreeNode* root) {
+    // Approach when all leaf nodes are not as far left as possible
+    queue<TreeNode*> q;
+    q.push(root);
+    int found=0, num=0, level=1;
+    while(!found) {
+        int n=q.size();
+        level++;
+        for(int i=0;i<n;i++) {
+            TreeNode* node=q.front();
+            if(!node->left) {
+                num++;
+                found=1;
+            }
+            else q.push(node->left);
+            if(!node->right) {
+                num++;
+                found=1;
+            }
+            else q.push(node->right);
+        }
+    }
+    return pow(2, level)-num;
+}
+
+int countNodes(TreeNode* root) {
+    if(!root)return 0;
+    int lh=leftHeight(root->left);
+    int rh=rightHeight(root->right);
+    if(lh==rh)return pow(2, lh) - 1;
+    return 1+countNodes(root->left)+countNodes(root->right);
+}
+int leftHeight(TreeNode* root) {
+    if(!root)return 0;
+    return 1+leftHeight(root->left);
+}
+int rightHeight(TreeNode* root) {
+    if(!root)return 0;
+    return 1+rightHeight(root->right);
+}
+
+TreeNode* preInTree(vector<int>& preorder, vector<int>& inorder, int& currRoot, int srootPos, int erootPos) {
+    if(srootPos>erootPos)return nullptr;
+    TreeNode* root=new TreeNode(preorder[currRoot]);
+    int nrootPos=find(inorder.begin(), inorder.end(), preorder[currRoot]) - inorder.begin();
+    currRoot++;
+    root->left=preInTree(preorder, inorder, currRoot, srootPos, nrootPos-1);
+    root->right=preInTree(preorder, inorder, currRoot, nrootPos+1, erootPos);
+    return root;
+}
+
+TreeNode* postInTree(vector<int>& inorder, vector<int>& postorder, int& currRoot, int srootPos, int erootPos) {
+    if(srootPos>erootPos)return nullptr;
+    TreeNode* root=new TreeNode(postorder[currRoot]);
+    int nrootPos=find(inorder.begin(), inorder.end(), postorder[currRoot])-inorder.begin();
+    currRoot--;
+    root->right=postInTree(inorder, postorder, currRoot, nrootPos+1, erootPos);
+    root->left=postInTree(inorder, postorder, currRoot, srootPos, nrootPos-1);
+    return root;
+}
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("input.txt", "r", stdin);
