@@ -268,30 +268,26 @@ bool lca(TreeNode* root, TreeNode* p, TreeNode* q, TreeNode*& ans) {
 }
 
 int widthOfBinaryTree(TreeNode* root) {
-    long long ans=1;
-    queue<pair<TreeNode*, long long>> q;
-    q.push({ root,1 });
+    int ans=1;
+    queue<pair<TreeNode*, int>> q;
+    q.push({ root,0 });
     while(!q.empty()) {
-        long long n=q.size(), s=0, e=0;
+        int n=q.size(), s, e;
+        int first=-1;
         for(int i=1;i<=n;i++) {
             TreeNode* node=q.front().first;
-            long long x=q.front().second;
+            int x=q.front().second;
             if(i==1)s=x;
             if(i==n)e=x;
-            if(node->left) {
-                q.push({ node->left,x*2-1 });
-            }
-            if(node->right) {
-                q.push({ node->right,x*2 });
-            }
+            if(first==-1 && (node->left || node->right))first=q.front().second;
+            if(node->left) q.push({ node->left,(x-first)*2 });
+            if(node->right) q.push({ node->right,(x-first)*2+1 });
             q.pop();
         }
-        cout<<e<<" "<<s<<endl;
         ans=max(ans, e-s+1);
     }
     return ans;
 }
-
 
 void kDown(TreeNode* root, int k, vector<int>& sol) {
     if(k<0)return;
@@ -344,13 +340,6 @@ int totalNodes(TreeNode* root) {
     return pow(2, level)-num;
 }
 
-int countNodes(TreeNode* root) {
-    if(!root)return 0;
-    int lh=leftHeight(root->left);
-    int rh=rightHeight(root->right);
-    if(lh==rh)return pow(2, lh) - 1;
-    return 1+countNodes(root->left)+countNodes(root->right);
-}
 int leftHeight(TreeNode* root) {
     if(!root)return 0;
     return 1+leftHeight(root->left);
@@ -359,6 +348,14 @@ int rightHeight(TreeNode* root) {
     if(!root)return 0;
     return 1+rightHeight(root->right);
 }
+int countNodes(TreeNode* root) {
+    if(!root)return 0;
+    int lh=leftHeight(root->left);
+    int rh=rightHeight(root->right);
+    if(lh==rh)return pow(2, lh) - 1;
+    return 1+countNodes(root->left)+countNodes(root->right);
+}
+
 
 TreeNode* preInTree(vector<int>& preorder, vector<int>& inorder, int& currRoot, int srootPos, int erootPos) {
     if(srootPos>erootPos)return nullptr;
@@ -380,6 +377,34 @@ TreeNode* postInTree(vector<int>& inorder, vector<int>& postorder, int& currRoot
     return root;
 }
 
+
+string serialize(TreeNode* root) {
+    queue<TreeNode*> q;
+    string s="[";
+    q.push(root);
+    s+=to_string(root->val)+",";
+    while(!q.empty()) {
+        int n=q.size();
+        for(int i=0;i<n;i++) {
+            TreeNode* node=q.front();
+            if(node->left) {
+                q.push(node->left);
+                s+=to_string(node->left->val)+",";
+            }
+            else s+="null,";
+            if(node->right) {
+                q.push(node->right);
+                s+=to_string(node->right->val)+",";
+            }
+            else s+="null,";
+            q.pop();
+        }
+    }
+    s.pop_back();
+    s.push_back(']');
+    return s;
+}
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("input.txt", "r", stdin);
@@ -395,7 +420,9 @@ int main() {
     root->right->right=new TreeNode(7);
     root->left->right->left=new TreeNode(8);
     root->left->right->right=new TreeNode(9);
+    root->left->right->right->left=new TreeNode(10);
 
+    cout<<serialize(root);
     // vector<vector<int>> sol;
     // queue<TreeNode*> add;
     // add.push(root);
