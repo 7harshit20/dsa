@@ -377,10 +377,10 @@ TreeNode* postInTree(vector<int>& inorder, vector<int>& postorder, int& currRoot
     return root;
 }
 
-
 string serialize(TreeNode* root) {
     queue<TreeNode*> q;
-    string s="[";
+    string s="";
+    if(!root)return s;
     q.push(root);
     s+=to_string(root->val)+",";
     while(!q.empty()) {
@@ -391,19 +391,169 @@ string serialize(TreeNode* root) {
                 q.push(node->left);
                 s+=to_string(node->left->val)+",";
             }
-            else s+="null,";
+            else s+="#,";
             if(node->right) {
                 q.push(node->right);
                 s+=to_string(node->right->val)+",";
             }
-            else s+="null,";
+            else s+="#,";
             q.pop();
         }
     }
     s.pop_back();
-    s.push_back(']');
     return s;
 }
+TreeNode* deserialize(string s) {
+
+    // TreeNode* deserialize(string s) {
+    //     if(s.length()==0)return nullptr;
+    //     stringstream ss(s);
+    //     queue<TreeNode*> q;
+    //     string str;
+    //     getline(ss, str, ',');
+    //     TreeNode* root=new TreeNode(stoi(str));
+    //     q.push(root);
+    //     while(!q.empty()) {
+    //         TreeNode* node=q.front();
+    //         getline(ss, str, ',');
+    //         if(str!="#") {
+    //             node->left=new TreeNode(stoi(str));
+    //             q.push(node->left);
+    //         }
+    //         getline(ss, str, ',');
+    //         if(str!="#") {
+    //             node->right=new TreeNode(stoi(str));
+    //             q.push(node->right);
+    //         }
+    //         q.pop();
+    //     }
+    //     return root;
+    // }
+
+    vector<string> arr;
+    int c=0, len=s.length();
+    for(int i=0;i<len;i++) {
+        if(s[i]==',') {
+            arr.push_back(s.substr(c, i-c));
+            c=i+1;
+        }
+        else if(i==len-1) {
+            arr.push_back(s.substr(c, len-c));
+        }
+    }
+    queue<TreeNode*> q;
+    if(len==0)return nullptr;
+    TreeNode* root=new TreeNode(stoi(arr[0]));
+    q.push(root);
+    int n=arr.size();
+    for(int i=1;i<n&&!q.empty();i+=2) {
+        TreeNode* node=q.front();
+        try {
+            node->left=(new TreeNode(stoi(arr[i])));
+            q.push(node->left);
+        }
+        catch(const exception& e) {}
+        try {
+            node->right=(new TreeNode(stoi(arr[i+1])));
+            q.push(node->right);
+        }
+        catch(const exception& e) {}
+        q.pop();
+
+    }
+    return root;
+}
+
+TreeNode* flattenHelper(TreeNode* root) {
+    if(!root)return nullptr;
+    TreeNode* l=flattenHelper(root->left);
+    TreeNode* r=flattenHelper(root->right);
+    if(!l&&!r)return root;
+    if(!l)return r;
+    TreeNode* currRight=root->right;
+    root->right=root->left;
+    l->right=currRight;
+    root->left=nullptr;
+    if(r)return r;
+    return l;
+}
+void flatten(TreeNode* root) {
+    // Recursive way 
+    // flattenHelper(root);
+
+    // constant space
+    TreeNode* temp=root;
+    while(root) {
+        if(!root->left) {
+            root=root->right;
+            continue;
+        }
+        temp=root->left;
+        while(temp->right!=nullptr && temp->right!=root)temp=temp->right;
+        if(!temp->right) {
+            temp->right=root;
+            root=root->left;
+        }
+        else {
+            temp->right=root->right;
+            root->right=root->left;
+            root->left=nullptr;
+            root=temp->right;
+        }
+    }
+}
+
+vector<int> morrisTraversalInorder(TreeNode* root) {
+    vector<int> ans;
+    TreeNode* temp=root;
+    while(root) {
+        if(!root->left) {
+            ans.push_back(root->val);
+            root=root->right;
+            continue;
+        }
+        temp=root->left;
+        while(temp->right!=nullptr && temp->right!=root) {
+            temp=temp->right;
+        }
+        if(temp->right==nullptr) {
+            temp->right=root;
+            root=root->left;
+        }
+        else {
+            temp->right=nullptr;
+            ans.push_back(root->val);
+            root=root->right;
+        }
+    }
+    return ans;
+}
+vector<int> morrisTraversalPreorder(TreeNode* root) {
+    vector<int> ans;
+    TreeNode* temp=root;
+    while(root) {
+        if(!root->left) {
+            ans.push_back(root->val);
+            root=root->right;
+            continue;
+        }
+        temp=root->left;
+        while(temp->right!=nullptr && temp->right!=root) {
+            temp=temp->right;
+        }
+        if(temp->right==nullptr) {
+            temp->right=root;
+            ans.push_back(root->val);
+            root=root->left;
+        }
+        else {
+            temp->right=nullptr;
+            root=root->right;
+        }
+    }
+    return ans;
+}
+
 
 int main() {
 #ifndef ONLINE_JUDGE
@@ -421,8 +571,13 @@ int main() {
     root->left->right->left=new TreeNode(8);
     root->left->right->right=new TreeNode(9);
     root->left->right->right->left=new TreeNode(10);
+    // flattenHelper(root);
+    // preOrder(root);
 
-    cout<<serialize(root);
+    vector<int> ans=morrisTraversalPreorder(root);
+    for(auto ele: ans)cout<<ele<<" ";
+
+
     // vector<vector<int>> sol;
     // queue<TreeNode*> add;
     // add.push(root);
