@@ -1,4 +1,10 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<string>
+#include<cmath>
+#include<queue>
+#include<stack>
 using namespace std;
 
 struct TreeNode {
@@ -565,12 +571,6 @@ int main() {
     root->left->right->left=new TreeNode(8);
     root->left->right->right=new TreeNode(9);
     root->left->right->right->left=new TreeNode(10);
-    // flattenHelper(root);
-    // preOrder(root);
-
-    vector<int> ans=morrisTraversalPreorder(root);
-    for(auto ele: ans)cout<<ele<<" ";
-
 
     // vector<vector<int>> sol;
     // queue<TreeNode*> add;
@@ -723,6 +723,11 @@ int main() {
     // sol=max(sol, timeDown(target)-0);
     // cout<<sol;
 
+    // flattenHelper(root);
+    // preOrder(root);
+
+    // vector<int> ans=morrisTraversalPreorder(root);
+    // for(auto ele: ans)cout<<ele<<" ";
 
     return 0;
 }

@@ -8,8 +8,7 @@ using namespace std;
 
 // ARRAYS
 
-int findKey(int* arr, int size, int k)
-{
+int findKey(int* arr, int size, int k) {
     int i=0;
     while(i<size)
     {
