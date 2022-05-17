@@ -2,8 +2,7 @@
 #include <math.h>
 using namespace std;
 
-int getbit(int n, int pos)
-{
+int getbit(int n, int pos) {
     return (n & (1 << pos)) == 0 ? 0 : 1;
 }
 int setbit(int n, int pos)
@@ -30,21 +29,21 @@ bool ispowerof2(int n)
 }
 int totalone(int n)
 {
-    int num = 0;
-    while (n)
+    int num=0;
+    while(n)
     {
-        n = (n & n - 1);
+        n=(n & n - 1);
         num++;
     }
     return num;
 }
 void subsets(int n, char arr[])
 {
-    for (int i = 0; i < pow(2, n); i++)
+    for(int i=0; i < pow(2, n); i++)
     {
-        for (int j = n - 1; j >= 0; j--)
+        for(int j=n - 1; j >= 0; j--)
         {
-            if (getbit(i, j))
+            if(getbit(i, j))
                 cout << arr[n - 1 - j];
         }
         cout << endl;
@@ -53,29 +52,29 @@ void subsets(int n, char arr[])
 
 int unique(int arr[], int n)
 {
-    int xorsum = 0;
-    for (int i = 0; i < n; i++)
+    int xorsum=0;
+    for(int i=0; i < n; i++)
     {
-        xorsum = xorsum ^ arr[i];
+        xorsum=xorsum ^ arr[i];
     }
     return xorsum;
 }
 void twounique(int arr[], int n)
 {
-    int xorsum = 0;
-    for (int i = 0; i < n; i++)
+    int xorsum=0;
+    for(int i=0; i < n; i++)
     {
-        xorsum ^= arr[i];
+        xorsum^=arr[i];
     }
-    int i = 0;
-    while (xorsum & (1 << i) == 0)
+    int i=0;
+    while(xorsum & (1 << i) == 0)
         i++;
-    int fn = 0;
-    for (int i = 0; i < n; i++)
+    int fn=0;
+    for(int i=0; i < n; i++)
     {
-        if (arr[i] & (1 << i))
+        if(arr[i] & (1 << i))
         {
-            fn ^= arr[i];
+            fn^=arr[i];
         }
     }
     cout << fn << endl;
@@ -88,22 +87,22 @@ void twounique(int arr[], int n)
 }
 int uniquefromthree(int arr[], int n)
 {
-    int digits[32] = {0};
-    for (int i = 0; i < 32; i++)
+    int digits[32]={ 0 };
+    for(int i=0; i < 32; i++)
     {
-        for (int j = 0; j < n; j++)
+        for(int j=0; j < n; j++)
         {
-            if (getbit(arr[j], i))
+            if(getbit(arr[j], i))
             {
                 digits[i]++;
             }
         }
-        digits[i] = digits[i] % 3;
+        digits[i]=digits[i] % 3;
     }
-    int num = 0;
-    for (int i = 0; i < 32; i++)
+    int num=0;
+    for(int i=0; i < 32; i++)
     {
-        num += (pow(2, i) * digits[i]);
+        num+=(pow(2, i) * digits[i]);
     }
     return num;
 }
